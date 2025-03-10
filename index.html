@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학급 랜덤 자리표 (3-5)</title>
+
+    <!-- Open Graph 메타 태그 -->
+    <meta property="og:title" content="학급 랜덤 자리표">
+    <meta property="og:description" content="초월고 3학년 5반 학급 랜덤 자리표">
+    <meta property="og:image" content="https://media.discordapp.net/attachments/813308261012602880/1348696743692468357/1.png?ex=67d06739&is=67cf15b9&hm=d4614b694c74c1c3c02081d834912b548af09e85cec90860ca49aac8d7ec4234&=&format=webp&quality=lossless&width=967&height=544">
+    <meta property="og:url" content="https://lsm1446.github.io/cw35/">
+    <meta property="og:type" content="website">
+
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .classroom { display: flex; justify-content: center; gap: 20px; margin-top: 20px; position: relative; }
+        .section { display: grid; gap: 5px; }
+        .section-1 { grid-template-columns: repeat(2, 60px); grid-template-rows: repeat(5, 60px); }
+        .section-other { grid-template-columns: repeat(2, 60px); grid-template-rows: repeat(4, 60px); }
+        .seat { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+                border: 1px solid black; background-color: lightgray; font-size: 16px; font-weight: bold; }
+        .empty { background-color: white; border: none; }
+        .random-btn { margin-top: 10px; padding: 10px; cursor: pointer; font-size: 16px; }
+        .desk { margin-top: 10px; font-size: 18px; font-weight: bold; }
+        .password-input { margin-top: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h2>학급 자리표</h2>
+    
+    <!-- 비밀번호 입력 -->
+    <input type="password" id="passwordInput" class="password-input" placeholder="비밀번호 입력">
+    <button class="random-btn" onclick="randomizeSeats()">자리 랜덤 배정</button>
+    
+    <div class="desk">📚 교탁 📚</div>
+    <div class="classroom">
+        <div class="section section-1" id="section1"></div>
+        <div class="section section-other" id="section2"></div>
+        <div class="section section-other" id="section3"></div>
+        <div class="section section-other" id="section4"></div>
+    </div>
+
+    <!-- Firebase SDK (모듈 방식으로 사용) -->
+    <script type="module">
+        // Firebase 설정
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8AMcFMdV9anbIcSdRDNgoEiblW72Kkuc",
+            authDomain: "seatprogram-fd12c.firebaseapp.com",
+            databaseURL: "https://seatprogram-fd12c-default-rtdb.firebaseio.com",
+            projectId: "seatprogram-fd12c",
+            storageBucket: "seatprogram-fd12c.firebasestorage.app",
+            messagingSenderId: "206980631774",
+            appId: "1:206980631774:web:6f7360ea36a7075a40c64f",
+            measurementId: "G-VBYX6W0BQV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const students = [
+            "소정", "서진", "상현", "승환", "정민", "형인", "민찬", "예림",
+            "동환", "주아", "태희", "채은", "태영", "상민", "승헌", "현정",
+            "수민", "채민", "은진", "재현", "리원", "범준", "예담", "민수",
+            "정원", "시후", "다인", "기훈", "예은", "윤지", "태주", "서정", "요한"
+        ];
+
+        const sections = { 
+            section1: { rows: 5, cols: 2 },
+            section2: { rows: 4, cols: 2 },
+            section3: { rows: 4, cols: 2 },
+            section4: { rows: 4, cols: 2 }
+        };
+
+        function createSeats() {
+            for (let id in sections) {
+                let section = document.getElementById(id);
+                section.innerHTML = '';
+                let { rows, cols } = sections[id];
+                for (let i = 0; i < rows * cols; i++) {
+                    let seat = document.createElement('div');
+                    seat.className = 'seat';
+                    if (id === 'section1' && i === 9) {
+                        seat.classList.add('empty');
+                        seat.textContent = '';
+                    } else {
+                        seat.textContent = '-';
+                    }
+                    section.appendChild(seat);
+                }
+            }
+        }
+
+        function randomizeSeats() {
+            const enteredPassword = document.getElementById("passwordInput").value;
+            
+            // Firebase에서 비밀번호 가져오기
+            const passwordRef = ref(db, 'settings/seatPassword');
+            get(passwordRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const storedPassword = snapshot.val();
+                    if (!enteredPassword) {
+                        alert("자리를 배정하기 위해선 비밀번호가 필요합니다.");
+                        return;
+                    }
+
+                    if (enteredPassword !== storedPassword) {
+                        alert("비밀번호가 틀렸습니다.");
+                        return;
+                    }
+
+                    // 자리 랜덤 배정
+                    let shuffled = [...students].sort(() => Math.random() - 0.5);
+                    let seats = document.querySelectorAll('.seat:not(.empty)');
+                    seats.forEach((seat, index) => {
+                        seat.textContent = shuffled[index] || '-';
+                    });
+
+                    // Firebase에 자리 배정 결과 저장
+                    set(ref(db, 'seatingChart'), shuffled);
+                } else {
+                    alert("비밀번호를 확인할 수 없습니다.");
+                }
+            });
+        }
+
+        function loadSeats() {
+            const seatingChartRef = ref(db, 'seatingChart');
+            get(seatingChartRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    let savedSeats = snapshot.val();
+                    let seats = document.querySelectorAll('.seat:not(.empty)');
+                    seats.forEach((seat, index) => {
+                        seat.textContent = savedSeats[index] || '-';
+                    });
+                }
+            });
+        }
+
+        // 전역에서 함수 접근 가능하게 만들기
+        window.randomizeSeats = randomizeSeats;
+
+        createSeats();
+        loadSeats();
+    </script>
+</body>
+</html>
