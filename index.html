@@ -13,17 +13,67 @@
     <meta property="og:type" content="website">
 
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        .classroom { display: flex; justify-content: center; gap: 20px; margin-top: 20px; position: relative; }
-        .section { display: grid; gap: 5px; }
-        .section-1 { grid-template-columns: repeat(2, 60px); grid-template-rows: repeat(5, 60px); }
-        .section-other { grid-template-columns: repeat(2, 60px); grid-template-rows: repeat(4, 60px); }
-        .seat { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
-                border: 1px solid black; background-color: lightgray; font-size: 16px; font-weight: bold; }
-        .empty { background-color: white; border: none; }
-        .random-btn { margin-top: 10px; padding: 10px; cursor: pointer; font-size: 16px; }
-        .desk { margin-top: 10px; font-size: 18px; font-weight: bold; }
-        .password-input { margin-top: 10px; font-size: 16px; }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0; /* 여백 제거 */
+            padding: 0;
+            overflow-x: hidden; /* 가로 스크롤 방지 */
+        }
+
+        .classroom {
+            display: flex;
+            flex-wrap: wrap; /* 모바일에서 자동 줄바꿈 */
+            justify-content: center;
+            gap: 10px; /* 간격 줄임 */
+            margin-top: 20px;
+            width: 100%; /* 전체 너비 사용 */
+            max-width: 100vw; /* 화면을 벗어나지 않도록 */
+            overflow-x: auto; /* 가로 스크롤 가능 */
+            padding: 10px; /* 양쪽 패딩 추가 */
+            box-sizing: border-box;
+        }
+
+        .section {
+            display: grid;
+            gap: 5px;
+        }
+
+        .section-1 {
+            grid-template-columns: repeat(2, 60px);
+            grid-template-rows: repeat(5, 60px);
+        }
+
+        .section-other {
+            grid-template-columns: repeat(2, 60px);
+            grid-template-rows: repeat(4, 60px);
+        }
+
+        .seat {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid black;
+            background-color: lightgray;
+            font-size: 16px;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        /* 반응형: 화면이 작을 때 크기를 조정 */
+        @media (max-width: 480px) {
+            .seat {
+                width: 50px;
+                height: 50px;
+                font-size: 14px;
+            }
+            .classroom {
+                gap: 5px; /* 간격 줄이기 */
+            }
+        }
+
     </style>
 </head>
 <body>
