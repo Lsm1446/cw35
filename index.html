@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1, user-scalable=no">
-
-
-
     <title>학급 랜덤 자리표 (3-5)</title>
-
     <!-- Open Graph 메타 태그 -->
     <meta property="og:title" content="학급 랜덤 자리표">
     <meta property="og:description" content="초월고 3학년 5반 학급 랜덤 자리표">
@@ -22,13 +18,22 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden; /* 가로 스크롤 방지 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 화면 높이를 채우게 설정 */
         }
 
-        .container {
-            width: 100vw;
-            overflow-x: hidden; /* 가로 스크롤 방지 */
-            display: flex;
-            justify-content: center;
+        h2 {
+            margin-top: 20px;
+        }
+
+        .password-input,
+        .random-btn,
+        .desk {
+            display: block;
+            margin: 10px auto;
         }
 
         .classroom {
@@ -67,19 +72,6 @@
             font-size: 16px;
             font-weight: bold;
         }
-
-
-
-        .password-input,
-        .random-btn,
-        .desk {
-            display: block;
-            margin: 10px auto;
-        }
-
-        
-
-        
 
     </style>
 </head>
