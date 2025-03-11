@@ -25,11 +25,11 @@
         }
 
         .container {
-            width: 100%;
+            width: 100vw; /* 화면 전체 너비를 사용 */
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: auto; /* 가로 스크롤 허용 */
+            overflow-x: auto; /* 가로 스크롤 가능하도록 설정 */
         }
 
         .classroom {
@@ -37,8 +37,9 @@
             justify-content: center;
             gap: 20px;
             margin-top: 20px;
-            transform-origin: top center; /* 기준을 중앙으로 설정 */
+            width: max-content; /* 내부 크기에 맞게 조정 */
         }
+
 
 
         .section {
@@ -97,22 +98,25 @@
     </div>
 
     <script>
-        function adjustScale() {
+        function adjustLayout() {
             let classroom = document.querySelector('.classroom');
             let container = document.querySelector('.container');
 
-            let scaleValue = window.innerWidth / classroom.scrollWidth; 
-            scaleValue = Math.min(scaleValue, 1); // 너무 크면 1로 제한
+            // 화면 크기에 맞게 조정
+            let scaleValue = window.innerWidth / classroom.scrollWidth;
+            if (scaleValue < 1) {
+                classroom.style.width = `${window.innerWidth}px`;
+            } else {
+                classroom.style.width = "auto";
+            }
 
-            classroom.style.transform = `scale(${scaleValue})`;
-            classroom.style.transformOrigin = "top center";
-
-            // scale 적용 후 중앙 정렬
-            container.scrollLeft = (classroom.scrollWidth * scaleValue - window.innerWidth) / 2;
+            // 중앙 정렬
+            container.scrollLeft = (container.scrollWidth - window.innerWidth) / 2;
         }
 
-        window.onload = adjustScale;
-        window.onresize = adjustScale;
+        window.onload = adjustLayout;
+        window.onresize = adjustLayout;
+
 
     </script>
 
